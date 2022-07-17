@@ -2,6 +2,8 @@
 #include <time.h>
 using namespace sf;
 
+const int PIXELS_PER_BLOCK = 18;
+
 const int M = 20;
 const int N = 10;
 
@@ -36,13 +38,11 @@ int main()
 	
 	RenderWindow window(VideoMode(320, 480), "The Game!");
 	
-	Texture t1,t2,t3;
-	t1.loadFromFile("images/tiles.png");
-	t2.loadFromFile("images/background.png");
-    t3.loadFromFile("images/frame.png");
+	Texture t;
+	t.loadFromFile("images/tiles.png");
 	
-	Sprite s(t1), background(t2), frame(t3);
-	s.setTextureRect(IntRect(0,0,18,18));
+	Sprite s(t);
+	s.setTextureRect(IntRect(0,0,PIXELS_PER_BLOCK,PIXELS_PER_BLOCK));
 	
 	int dx=0; bool rotate=0; int colorNum=1;
 	float timer=0,delay=0.3;
@@ -66,8 +66,6 @@ int main()
 				else if (e.key.code==Keyboard::Left) dx=-1;
 				else if (e.key.code==Keyboard::Right) dx=1;
 		}
-		
-		if (Keyboard::isKeyPressed(Keyboard::Down)) delay=0.05;
 		
 		//// <- Move -> ////
 		for (int i=0;i<4;i++) a[i].x+=dx;
@@ -98,6 +96,7 @@ int main()
 				
 				colorNum=1+rand()%7;
 				int n=rand()%7;
+				printf("%i",n);
 				for (int i=0;i<4;i++)
 				{
 					a[i].x = figures[n][i] % 2;
@@ -107,43 +106,24 @@ int main()
 			timer=0;
 		}
 		
-		////////check lines////////
-		int k=M-1;
-		for (int i=M-1;i>0;i--)
-		{
-			int count=0;
-			for (int j=0;j<N;j++)
-			{
-				if (field[i][j]) count++;
-				field[k][j]=field[i][j];
-			}
-			if (count<N) k--;
-		}
-		
-		dx=0; rotate=0; delay=0.3;
+		dx=0; rotate=0;
 		
 		//////////draw//////////
 		window.clear(Color::White);
-		window.draw(background);
 		
 		for (int i=0;i<M;i++)
 			for (int j=0;j<N;j++)
 			{
 				if (field[i][j]==0) continue;
-				s.setTextureRect(IntRect(field[i][j]*18,0,18,18));
-				s.setPosition(j*18,i*18);
-				s.move(28,31); //offset
+				s.setPosition(j*PIXELS_PER_BLOCK,i*PIXELS_PER_BLOCK);
 				window.draw(s);
 			}
 		
 		for (int i=0;i<4;i++)
 		{
-			s.setTextureRect(IntRect(colorNum*18,0,18,18));
-			s.setPosition(a[i].x*18,a[i].y*18);
-			s.move(28,31); //offset
+			s.setPosition(a[i].x*PIXELS_PER_BLOCK,a[i].y*PIXELS_PER_BLOCK);
 			window.draw(s);
 		}
-		window.draw(frame);
 		window.display();
 	}
 	
